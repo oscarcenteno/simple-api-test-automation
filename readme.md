@@ -1,0 +1,5 @@
+# Readme
+
+## Build status
+
+![alt text](https://codebuild.us-east-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVnVqc1VMMzQzN0NGLzhZaXZiV3RQcEtFMkU0bzVjbnQrbmNTM0RpYjNVNDhBSSt6dUc5QVpMcms5VzRSZXNjQ1ZvZWFkUGQ1N3lLWG5qS2FHMmVhT25zPSIsIml2UGFyYW1ldGVyU3BlYyI6IjdJaWdoSytTeWswOUpTdTAiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=develop "Build status")

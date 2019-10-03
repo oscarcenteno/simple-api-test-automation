@@ -1,0 +1,37 @@
+### can get the wallet list
+
+Request:
+
+GET http://website.com/wallets/
+
+Expected response:
+
+[
+    {
+        name: "sample",
+        id: 1,
+        ledgerId: 10
+    },
+    {
+        name: "asdfasdf",
+        id: 2,
+        ledgerId: 20
+    }
+]
+
+### can get a single wallet
+
+Request:
+
+GET http://website.com/wallets/:name
+
+Expected response:
+
+{
+    name: "sample",
+    id: 1,
+    ledgerId: 10
+}
+
+
+
