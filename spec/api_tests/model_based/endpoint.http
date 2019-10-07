@@ -1,1 +1,47 @@
-http://ec2-3-17-131-127.us-east-2.compute.amazonaws.com/
+http://localhost:3000/entitlements?role=krm%20operator
+Content-Type: application/json
+
+###
+http://localhost:3000/entitlements?role=krr%20operator
+
+###
+http://localhost:3000/entitlements?role=x
+
+
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "Pol",
+  "lastName": "Puig"
+}
+
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "X",
+  "lastName": "Puig"
+}
+
+###
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "id": "1",
+  "name": "Pol",
+  "lastName": "New Last Name"
+}
+
+###
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "id": "X",
+  "name": "Pol",
+  "lastName": "New Last Name"
+}

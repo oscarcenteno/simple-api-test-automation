@@ -1,18 +1,22 @@
-const excelToJson = require('convert-excel-to-json');
-
-var path = require('path');
-const file = path.join(__dirname, 'endpoints.xlsx');
 
 class Endpoints {
-	constructor() {
-		const rows = getRowsFromSheet('Sheet1');
+	constructor(rows) {
 		this.endPoints = rows.map((element) => {
-			let params;
-			if (element.params) {
+			let query;
+			if (element.query) {
 				try {
-					params = JSON.parse(element.params);
+					query = JSON.parse(element.query);
 				} catch (error) {
-					params = require(element.params);
+					query = require(element.query);
+				}
+			}
+
+			let body;
+			if (element.body) {
+				try {
+					body = JSON.parse(element.body);
+				} catch (error) {
+					body = require(element.body);
 				}
 			}
 
@@ -25,28 +29,24 @@ class Endpoints {
 				}
 			}
 
-			return {
-				method: element.method.toLowerCase(),
-				url: element.url,
-				jsonParams: params,
-				jsonResponse: response
-			};
+			const allowedMethods = ["get", "post", "put"];
+			const currentMethod = element.method.toLowerCase();
+			if (allowedMethods.includes(currentMethod)) {
+				return {
+					method: currentMethod,
+					url: element.url,
+					jsonBody: body,
+					jsonQuery: query,
+					jsonResponse: response
+				};
+			}
+			else {
+				console.log(`Method ${currentMethod} is not allowed for ${element.url}`);
+			}
+
 		});
 	}
 }
 
-module.exports = new Endpoints();
+module.exports = Endpoints;
 
-function getRowsFromSheet(sheet) {
-	const result = excelToJson({
-		sourceFile: file,
-		header: {
-			rows: 1
-		},
-		columnToKey: {
-			'*': '{{columnHeader}}'
-		}
-	});
-
-	return result[sheet];
-}

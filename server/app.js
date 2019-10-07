@@ -1,20 +1,30 @@
 const express = require('express');
+const _ = require('underscore');
+const EndPoints = require('./Endpoints');
+
+// configure app
 const app = express();
 const port = 3000;
-var _ = require('underscore');
+// 	disable cache and 304 Not Modified Response Codes
+app.disable('etag');
+// to be able to parse the body of a request
+app.use(express.json())
 
-const { endPoints } = require('./endpoints');
+const path = require('path');
+const file = path.join(__dirname, 'endpoints.xlsx');
+const rows = getRowsFromSheet({ file, sheet: 'Sheet1' });
 
-const getEndPoints = endPoints.filter(filterGet);
+const endPoints = new EndPoints(rows).endPoints;
 
 const smartGetEndPoints = [];
 
-getEndPoints.forEach((endpoint) => {
-	const found = smartGetEndPoints.find((element) => element.url == endpoint.url);
+endPoints.forEach((endpoint) => {
+	const found = smartGetEndPoints.find((element) => element.method == endpoint.method && element.url == endpoint.url);
 
 	if (found) {
 		found.mappings.push({
-			params: endpoint.jsonParams,
+			body: endpoint.jsonBody,
+			query: endpoint.jsonQuery,
 			response: endpoint.jsonResponse
 		});
 	} else {
@@ -23,7 +33,8 @@ getEndPoints.forEach((endpoint) => {
 			url: endpoint.url,
 			mappings: [
 				{
-					params: endpoint.jsonParams,
+					body: endpoint.jsonBody,
+					query: endpoint.jsonQuery,
 					response: endpoint.jsonResponse
 				}
 			]
@@ -33,31 +44,62 @@ getEndPoints.forEach((endpoint) => {
 });
 
 const createEndpoint = (element) => {
-	app.get(element.url, function(req, res) {
-		console.log(req.query);
-		res.setHeader('Content-Type', 'application/json');
 
-		const mappings = element.mappings;
-		console.log(mappings);
+	switch (element.method) {
+		case "get":
+			app.get(element.url, (req, res) => {
+				res.setHeader('Content-Type', 'application/json');
 
-    const found = mappings.find((element) => {
-      const equal = _.isEqual(element.params, req.query);
-			console.log('Compare:' + equal);
-			console.log(element.params);
-			console.log(req.query);
-			console.log();
+				const mappings = element.mappings;
+				const found = mappings.find((element) => _.isEqual(element.query, req.query));
 
-      return equal;
-		});
+				if (found) {
+					res.json(found.response);
+				} else {
+					res.status(404).send({ 'message': 'Query params were not matched.' });
+				}
+			});
+			break;
+		case "post":
+			app.post(element.url, (req, res) => {
+				res.setHeader('Content-Type', 'application/json');
 
-		if (found) {
-			console.log(element.jsonResponse);
-			res.json(found.response);
-		} else {
-			console.log('Response not found');
-			res.send('Response not found');
-		}
-	});
+				const mappings = element.mappings;
+				const found = mappings.find((element) => _.isEqual(element.body, req.body));
+
+				if (found) {
+					res.json(found.response);
+				} else {
+					res.status(404).send({ 'message': 'Body was not matched.' });
+				}
+
+
+				res.json({});
+			});
+			break;
+
+		case "put":
+			app.put(element.url, (req, res) => {
+				res.setHeader('Content-Type', 'application/json');
+
+				const mappings = element.mappings;
+				const found = mappings.find((element) => _.isEqual(element.body, req.body));
+
+				if (found) {
+					res.json(found.response);
+				} else {
+					res.status(404).send({ 'message': 'Body was not matched.' });
+				}
+
+
+				res.json({});
+			});
+			break;
+		default:
+			break;
+	}
+
+
 };
 
 smartGetEndPoints.forEach(createEndpoint);
@@ -73,6 +115,19 @@ app.get('/entitlements', function (req, res) {
 
 app.listen(port, () => console.log(`Listening on port ${port}!`));
 
-function filterGet(element) {
-	return element.method == 'get';
+
+
+function getRowsFromSheet({ file, sheet }) {
+	const excelToJson = require('convert-excel-to-json');
+	const result = excelToJson({
+		sourceFile: file,
+		header: {
+			rows: 1
+		},
+		columnToKey: {
+			'*': '{{columnHeader}}'
+		}
+	});
+
+	return result[sheet];
 }
