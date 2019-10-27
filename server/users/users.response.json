@@ -1,10 +1,12 @@
 [
-  {
-  "name": "Pol",
-  "lastName": "Puig"
-},
-{
-  "name": "Irene",
-  "lastName": "Barba"
-}
+	{
+		"id": 1,
+		"name": "John",
+		"lastName": "Smith"
+	},
+	{
+		"id": 2,
+		"name": "Jane",
+		"lastName": "Smith"
+	}
 ]
