@@ -14,7 +14,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"api-server-sim": "0.0.4",
+		"api-server-sim": "0.0.5",
 		"axios": "^0.19.0",
 		"convert-excel-to-json": "^1.6.1",
 		"express": "^4.17.1",
